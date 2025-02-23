@@ -1,4 +1,84 @@
-<!DOCTYPE html>
+<?php
+require_once 'db_connect.php';
+
+// Check database connection
+if (!$conn) {
+    die("Database connection failed: " . mysqli_connect_error());
+}
+
+$sql = "SELECT * FROM notifications WHERE status = 'pending'";
+$result = mysqli_query($conn, $sql);
+
+// Check for SQL query error
+if (!$result) {
+    die("Query failed: " . mysqli_error($conn));
+}
+
+// Check if there are pending notifications
+if (mysqli_num_rows($result) == 0) {
+    echo "<p>No pending notifications.</p>";
+}
+?>
+
+<body>
+    <div class="container">
+        <h2>Pending Notifications</h2>
+        <div id="notifications">
+            <?php while ($row = mysqli_fetch_assoc($result)) { ?>
+                <div class="notification">
+                    <span>New Signup: <?php echo htmlspecialchars($row['user_email']); ?></span>
+                    <div class="buttons">
+                        <button class="btn approve" onclick="approveUser('<?php echo htmlspecialchars($row['user_email']); ?>')">✔</button>
+                        <button class="btn reject" onclick="rejectUser('<?php echo htmlspecialchars($row['user_email']); ?>')">✖</button>
+                    </div>
+                </div>
+            <?php } ?>
+        </div>
+    </div>
+
+    <script>
+        function approveUser(email) {
+    fetch('approve_user.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `email=${encodeURIComponent(email)}`
+    })
+    .then(response => response.text())
+    .then(result => {
+        console.log("Approval result:", result);
+        if (result.trim() === "approved") {
+            alert("User approved successfully!");
+            location.reload();
+        } else {
+            alert("Approval failed.");
+        }
+    })
+    .catch(error => console.error("Error approving user:", error));
+}
+
+function rejectUser(email) {
+    fetch('reject_user.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `email=${encodeURIComponent(email)}`
+    })
+    .then(response => response.text())
+    .then(result => {
+        console.log("Rejection result:", result);
+        if (result.trim() === "rejected") {
+            alert("User rejected successfully!");
+            location.reload();
+        } else {
+            alert("Rejection failed.");
+        }
+    })
+    .catch(error => console.error("Error rejecting user:", error));
+}
+
+    </script>
+</body>
+
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -75,7 +155,7 @@
     </div>
 
     <script>
-        let pendingNotifications = 3; // Change this number to update notifications
+        let pendingNotifications = 5; // Change this number to update notifications
 
         function updateNotifications() {
             const notificationsContainer = document.getElementById("notifications");
@@ -97,3 +177,4 @@
     </script>
 </body>
 </html>
+ -->

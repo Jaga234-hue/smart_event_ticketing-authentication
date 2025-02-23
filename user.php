@@ -93,7 +93,7 @@
         
 
         <div id="signupForm" class="form">
-            <form id="signupform" action="db_store_API.php" method="POST" enctype="multipart/form-data">
+            <form id="signupform" action="userdatastore.php" method="POST" enctype="multipart/form-data">
                 <h2>Sign Up</h2>
             
                 <!-- Full Name -->
@@ -112,11 +112,8 @@
                 <label for="confirm_password">Confirm Password</label>
                 <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required>
                 <!-- location -->
-                 <label for="user-location">location</label>
-                <input type="text" id="user-location" name="user-location" placeholder="location" required>
-                <!-- Profile Picture -->
-                <label for="profile_picture">Profile Picture</label>
-                <input type="file" id="profile_picture" name="profile_picture" accept="image/*" required>
+                 <label for="mobile-number">mobile-number</label>
+                <input type="text" id="mobile-number" name="mobile-number" placeholder="mobile-number" required>
                 <div id="signupError" style="color: red; display: none;"></div>
                 <!-- Submit Button -->
                 <button type="submit">Sign Up</button>
