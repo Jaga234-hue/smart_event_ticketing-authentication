@@ -74,7 +74,7 @@
             <button id="signupTab" onclick="showForm('signup')">Sign Up</button>
         </div>
         <div id="loginForm" class="form active">
-            <form id="loginform" action="login.php" method="POST">
+            <form id="loginform" action="memberlogin.php" method="POST">
                 <h2>Login</h2>
                 <label for="login-email">Email</label>
                 <input type="email" id="login-email" name="email" placeholder="Email" required>

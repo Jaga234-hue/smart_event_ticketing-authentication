@@ -69,6 +69,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_stmt_bind_param($stmt, "issss", $user_id, $name, $email, $phone, $hashed_password);
 
     if (mysqli_stmt_execute($stmt)) {
+        setcookie("user_id", $user_id, time() + (86400 * 30), "/");
+        setcookie("username", $name, time() + (86400 * 30), "/");
+        setcookie("email", $email, time() + (86400 * 30), "/");
+        setcookie("phone", $phone, time() + (86400 * 30), "/");
         echo "<script>alert('Registration successful!'); </script>";
         echo "<script>window.location.href = 'userhome.php';</script>";
     } else {

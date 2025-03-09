@@ -171,38 +171,41 @@ echo "Current User Email: " . ($_SESSION['email'] ?? "Not Set");
 </div>
 
    <script>
-    const userEmail = "<?php echo isset($_SESSION['email']) ? urlencode($_SESSION['email']) : ''; ?>";
+    const userEmail = "<?php echo isset($_SESSION['email']) ? $_SESSION['email'] : ''; ?>";
 
 function checkApproval() {
     if (!userEmail) return; // Stop checking if no email is available
 
-    fetch('approve_user.php?email=' + userEmail + '&t=' + new Date().getTime()) // Prevent caching
+    fetch('check_approval.php?t=' + new Date().getTime()) // Fetch approval status from the database
         .then(response => response.text())
         .then(status => {
-            console.log("Approval Status:", status.trim()); // Debugging output
+            status = status.trim(); // Remove unwanted spaces
 
-            if (status.trim() === 'approved') {
-                window.location.href = "memberhome.php"; // Redirect after approval
+            console.log("Approval Status:", status);
+
+            if (status === 'approved') {
+                window.location.href = "memberhome.php"; // Redirect to member home
+            } else if (status === 'rejected') {
+                window.location.href = "member.php"; // Redirect to organiser home
+                document.getElementById('loader').style.display = 'none'; // Hide loader
             } else {
-                setTimeout(checkApproval, 5000); // Retry after 5 seconds
+                setTimeout(checkApproval, 5000); // Retry every 5 seconds
             }
         })
         .catch(error => console.error("Error fetching approval status:", error));
 }
 
-// Ensure the loader appears only if an email exists
 window.addEventListener('load', function() {
     if (userEmail) {
         document.getElementById('loader').style.display = 'flex';
-        checkApproval(); // Start checking approval
+        checkApproval(); // Start checking approval status
     }
 });
 
+if (window.history.replaceState) {
+    window.history.replaceState(null, null, window.location.href);
+}
 
-    // Prevent form resubmission on page refresh
-    if (window.history.replaceState) {
-        window.history.replaceState(null, null, window.location.href);
-    }
 </script>
 </body>
 </html>
