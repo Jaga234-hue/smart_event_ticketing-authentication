@@ -116,7 +116,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .menu-options {
             display: none;
             position: absolute;
-            top: 50px;
+            top: 58px;
             left: 10px;
             background: white;
             border-radius: 5px;
@@ -391,6 +391,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             display: none;
             z-index: 999;
         }
+
+        .downloadQR {
+            position: fixed;
+            top: 27.5%;
+            /* Center vertically */
+            left: -200px;
+            /* Start completely off-screen */
+            transform: translateY(-50%);
+            /* Centering trick */
+            height: 400px;
+            width: 250px;
+            background-color: #ddd;
+            border-right: 5px solid black;
+            border-bottom: 2px solid green;
+            transition: left 0.5s ease-in-out;
+            /* Smooth left-to-right animation */
+            z-index: 9999;
+            /* Ensure it's on top */
+            border-top-right-radius: 10%;
+            border-bottom-right-radius: 10%;
+        }
+
+        /* When the popup is active, slide it fully into view */
+        .downloadQR.show {
+            left: 0;
+            /* Moves it to the visible area */
+        }
     </style>
 </head>
 
@@ -422,8 +449,54 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
         <div class="menu-options" id="menuOptions">
             <div>My Selected Event</div>
-            <div>My QR Codes</div>
+            <div id="MYQr">My QR Codes</div>
             <div>Settings</div>
+        </div>
+        <div class="downloadQR" id="downloadQR" style="display: none;">
+            <h2>Download QR Code</h2>
+            <div class="qr-code" id="qrCode">
+                <?php
+                // Start the session to access cookies
+                require_once 'db_connect.php'; // Ensure this file contains the MySQLi connection ($conn)
+
+                // Check if the user_id cookie is set
+                if (isset($_COOKIE['user_id'])) {
+                    $userId = $_COOKIE['user_id'];
+
+                    // Query the payment table to get all QR codes with status 1 for the user
+                    $query = "SELECT Qr_code, Ticket_ID FROM payment WHERE User_ID = ? AND status = '1'";
+                    $stmt = $conn->prepare($query);
+                    $stmt->bind_param("i", $userId); // Bind the user_id parameter
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+
+                    if ($result->num_rows > 0) {
+                        // Loop through each QR code and create a download button
+                        while ($row = $result->fetch_assoc()) {
+                            $qrCodePath = $row['Qr_code'];
+                            $ticketId = $row['Ticket_ID'];
+                            echo '
+                <a href="' . htmlspecialchars($qrCodePath) . '" download>
+                    <button>Download QR Code for Ticket ID: ' . htmlspecialchars($ticketId) . '</button>
+                </a><br>';
+                        }
+                    } else {
+                        // If no QR codes are found, display a message
+                        echo '<p>No QR codes available for download.</p>';
+                    }
+
+                    // Close the statement
+                    $stmt->close();
+                } else {
+                    // If the user_id cookie is not set, display a message
+                    echo '<p>Please log in to access your QR codes.</p>';
+                }
+
+                // Close the database connection
+                ?>
+
+            </div>
+            <button class="close-btn" id="closePopup">Close</button>
         </div>
         <div class="slider-container">
             <div class="slider" id="slider">
@@ -510,11 +583,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             slider.style.transform = `translateX(-${currentIndex * 100}%)`;
         }
         setInterval(nextSlide, 3000);
-
+        const menu = document.getElementById("menuOptions");
+        const dot = document.getElementById("menu");
         // Toggle menu
         function toggleMenu() {
-            const menu = document.getElementById("menuOptions");
             menu.style.display = menu.style.display === "block" ? "none" : "block";
+            dot.style.backgroundColor = white;
         }
 
         // Filter events
@@ -562,9 +636,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             overlay.addEventListener('click', closePopup);
 
             function closePopup() {
-                 popup.style.display = 'none'; 
+                popup.style.display = 'none';
                 overlay.style.display = 'none';
             }
+        });
+
+        const downloadQR = document.getElementById("downloadQR");
+        const MYQrCode = document.getElementById("MYQr");
+
+        MYQrCode.addEventListener("click", function() {
+            downloadQR.style.display = 'block';
+
         });
 
         // Payment method selection
@@ -574,5 +656,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 onlinePaymentForm.style.display = this.value === "online" ? "block" : "none";
             });
         }); */
+        const closePopup = document.getElementById("closePopup");
+
+        // Show the QR code popup with slide-in animation
+        MYQrCode.addEventListener("click", function() {
+            downloadQR.style.display = "block"; // First, make it visible
+            setTimeout(() => {
+                downloadQR.classList.add("show"); // Then, trigger slide-in
+            }, 10); // Small delay ensures transition works
+        });
+
+        // Hide the QR code popup with slide-out animation
+        closePopup.addEventListener("click", function() {
+            downloadQR.classList.remove("show"); // Slide back out
+            setTimeout(() => {
+                downloadQR.style.display = "none"; // Hide after animation completes
+            }, 500); // Match transition duration
+        });
     </script>
 </body>
+
+</html>
