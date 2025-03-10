@@ -4,10 +4,8 @@ require_once 'db_connect.php';
 // Check if POST request and email is set
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['email'])) {
     $email = $_POST['email'];
-
     $update_sql = "UPDATE notifications SET status = 'approved' WHERE user_email = ?";
     $stmt = mysqli_prepare($conn, $update_sql);
-
     if ($stmt) {
         mysqli_stmt_bind_param($stmt, "s", $email);
         if (mysqli_stmt_execute($stmt)) {

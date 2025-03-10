@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Payment Form (Example) -->
         <div class="payment-box" id="payment-box">
             <h2>Payment</h2>
-            <form id="payment-form" id="proceed-button" >
+            <form id="payment-form" id="proceed-button"  action="process_payment.php" method="POST">
                 <label for="payment-method">Payment Method</label>
                 <select name="payment-method" id="payment-method">
                     <option value="cash">Cash</option>
@@ -94,13 +94,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button type="submit" id="proceed-button">Proceed</button>
             </form>
 
-            <form id="online-payment-form" id="submit-payment" >
+            <form id="online-payment-form" id="submit-payment" action="process_payment.php" method="POST" >
                 <label for="online-payment">Online Payment</label>
                 <p>UPI ID: <strong>9861828508@ybl</strong></p>
                 <p>UPI Number: <strong>9861828508</strong></p>
                 <input type="hidden" name="eventName" value="<?php echo htmlspecialchars($eventName); ?>">
                 <input type="hidden" name="eventDate" value="<?php echo htmlspecialchars($eventDate); ?>">
                 <input type="hidden" name="eventLocation" value="<?php echo htmlspecialchars($eventLocation); ?>">
+                <input type="hidden" name="payment-method" value="online">
                 <input type="text" name="transaction-id" id="transaction-id" placeholder="Enter Transaction ID" required>
                 <input type="date" name="transaction-date" id="transaction-date" required>
                 <button type="submit">Submit</button>
@@ -119,33 +120,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 proceedButton.style.display = 'block';
             }
         });
-        document.getElementById("payment-form").addEventListener("submit", function(event){
-    event.preventDefault(); // Prevent page reload
 
-    var formData = new FormData(this);
-
-    fetch("process_payment.php", {  // Send form data to process_payment.php
-        method: "POST",
-        body: formData
-    }).then(response => response.text())
-      .then(data => {
-          document.getElementById("response1").innerHTML = data;
-      });
-});
-
-document.getElementById("online-payment-form").addEventListener("submit", function(event){
-    event.preventDefault(); // Prevent page reload
-
-    var formData = new FormData(this);
-
-    fetch("process_payment.php", {  // Send form data to process_payment.php
-        method: "POST",
-        body: formData
-    }).then(response => response.text())
-      .then(data => {
-          document.getElementById("response2").innerHTML = data;
-      });
-});
+    
     </script>
 </body>
 </html>

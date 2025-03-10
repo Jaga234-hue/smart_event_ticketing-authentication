@@ -562,17 +562,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             overlay.addEventListener('click', closePopup);
 
             function closePopup() {
-                popup.style.display = 'none';
+                 popup.style.display = 'none'; 
                 overlay.style.display = 'none';
             }
         });
 
         // Payment method selection
-        document.addEventListener('DOMContentLoaded', function() {
+        /* document.addEventListener('DOMContentLoaded', function() {
             document.getElementById("payment-method").addEventListener("change", function() {
                 let onlinePaymentForm = document.getElementById("online-payment-form");
                 onlinePaymentForm.style.display = this.value === "online" ? "block" : "none";
             });
-        });
+        }); */
     </script>
 </body>
