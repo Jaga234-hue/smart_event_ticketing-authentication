@@ -75,7 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $notif_sql = "INSERT INTO notifications (user_email, status) VALUES (?, 'pending')";
         $notif_stmt = mysqli_prepare($conn, $notif_sql);
         mysqli_stmt_bind_param($notif_stmt, "s", $email);
-        mysqli_stmt_execute($notif_stmt);
+         mysqli_stmt_execute($notif_stmt); 
         mysqli_stmt_close($notif_stmt);
     } else {
         echo "<script>alert('Something went wrong. Please try again.'); window.history.back();</script>";
