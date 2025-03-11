@@ -31,7 +31,7 @@ if (!$event_id) {
 $payment_method = $_POST['payment-method'] ?? null;
 $transaction_id = null;
 $transaction_date =  null;
-$status = 0; // Default status for online payment
+$status = '0'; // Default status for online payment
 
 if ($payment_method == 'online') {
     if (!isset($_POST['transaction-id']) || empty($_POST['transaction-id'])) {
@@ -43,11 +43,11 @@ if ($payment_method == 'online') {
 
     $transaction_id = $_POST['transaction-id']; 
     $transaction_date = $_POST['transaction-date']; 
-    $status = 0; 
+    $status = '0'; 
 } else {
     $transaction_id = "CASH"; 
     $transaction_date = date('Y-m-d H:i:s'); 
-    $status = 1; 
+    $status = '1'; 
 }
 
 // Generate a unique ticket ID
@@ -67,10 +67,10 @@ function generateTicketID($conn) {
 $ticket_id = generateTicketID($conn);
 
 // Generate QR code
-$qrData = "UserID: $user_id, EventID: $event_id, TicketID: $ticket_id";
+$qrData = "UserID: $user_id, EventID: $event_id, TicketID: $ticket_id , Status: $status";
 $qrFilePath = "qr/$ticket_id.png";
 QRcode::png($qrData, $qrFilePath, QR_ECLEVEL_H, 10, 2);
-
+$status = '1';
 // Insert payment details into the database
 $stmt = $conn->prepare("INSERT INTO payment (Ticket_ID, Event_ID, User_id, Qr_code, status, Transaction_Date) VALUES (?, ?, ?, ?, ?, ?)");
 $stmt->bind_param("iiisss", $ticket_id, $event_id, $user_id, $qrFilePath, $status, $transaction_date);
