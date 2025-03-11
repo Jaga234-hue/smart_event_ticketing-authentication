@@ -29,11 +29,14 @@ if (mysqli_num_rows($result) == 0) {
     <style>
         /* General Styling */
         body {
+            display: flex;
             font-family: Arial, sans-serif;
             background-color: #121212;
             color: white;
             margin: 0;
             padding: 20px;
+            flex-direction: column;
+            align-items: center;
         }
 
         /* Styling for the Event Details Form */
@@ -148,6 +151,22 @@ if (mysqli_num_rows($result) == 0) {
         button:active {
             transform: scale(0.95);
         }
+        #cross{
+            cursor: pointer;
+            width: 100px;
+            height: fit-content;
+            position: absolute;
+            text-align: center;
+            background-color: red;
+            margin-left: 120px;
+            text-decoration: solid;
+         }
+         #cross:hover{
+            color: white;
+            font-weight: bold;
+            background: linear-gradient(135deg,rgb(120, 124, 129), #00c6ff);
+            transform: scale(2.05);
+         }
     </style>
 </head>
 
@@ -186,9 +205,10 @@ if (mysqli_num_rows($result) == 0) {
 
                 <button type="submit" id="submit" class="input-box">Submit</button>
             </form>
-
+            <div id="cross" style="display: block;">✖</div>
         </div>
     </div>
+    
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         function approveUser(email) {
@@ -235,6 +255,11 @@ if (mysqli_num_rows($result) == 0) {
         const addbtn = document.getElementById("add");
         const formbox = document.getElementById("details-of-event");
         const submitbtn = document.getElementById("submit");
+        const cross = document.getElementById("cross");
+        cross.addEventListener("click", function() {
+            formbox.style.display = "none";
+            addbtn.style.display = "block";
+        })
         
         addbtn.addEventListener("click", function() {
             formbox.style.display = "block";
