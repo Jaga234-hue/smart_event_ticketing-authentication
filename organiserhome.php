@@ -28,6 +28,7 @@ if (mysqli_num_rows($result) == 0) {
     <title>Document</title>
     <style>
         /* General Styling */
+        /* General Styling */
         body {
             display: flex;
             font-family: Arial, sans-serif;
@@ -37,6 +38,7 @@ if (mysqli_num_rows($result) == 0) {
             padding: 20px;
             flex-direction: column;
             align-items: center;
+            overflow-x: hidden; /* Hide horizontal scrollbar */
         }
 
         /* Styling for the Event Details Form */
@@ -170,6 +172,7 @@ if (mysqli_num_rows($result) == 0) {
             transform: scale(2.05);
         }
 
+        /* Event List */
         .event-list {
             background: black;
             padding: 15px;
@@ -205,14 +208,17 @@ if (mysqli_num_rows($result) == 0) {
             font-size: 16px;
         }
 
-        /* Event List */
+        /* Verified List */
         .verified-list {
+            display: flex;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 20px;
             padding: 20px;
             background-color: #f4f4f9;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 500px;
+            text-align: center;
         }
 
         .verified-list h3 {
@@ -238,7 +244,7 @@ if (mysqli_num_rows($result) == 0) {
         .verified-list table th,
         .verified-list table td {
             padding: 15px 20px;
-            text-align: left;
+            text-align: center;
             border-bottom: 1px solid #e0e0e0;
         }
 
@@ -265,24 +271,6 @@ if (mysqli_num_rows($result) == 0) {
         .verified-list table tr:hover {
             background-color: #f1f8ff;
             transition: background-color 0.3s ease;
-        }
-
-        /* Responsive Design for Mobile */
-        @media (max-width: 768px) {
-            .verified-list table {
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap;
-            }
-
-            .verified-list table th,
-            .verified-list table td {
-                min-width: 120px;
-            }
-
-            .verified-list h3 {
-                font-size: 22px;
-            }
         }
     </style>
 </head>

@@ -85,17 +85,16 @@
 </head>
 
 <body>
-    <div class="container">
-        <div id="loginForm" class="form active">
-            <form id="loginform" action="" method="POST">
-                <label for="unique-number" style="color: white; font-size: 18px;">Unique-number</label>
-                <input type="password" id="password" name="unique-number" placeholder="Enter your unique number" required>
-                <div id="loginError" style="color: red; display: none;"></div>
-                <button type="submit">Login</button>
-            </form>
-        </div>
+<div class="container">
+    <div id="loginForm" class="form active">
+        <form id="loginform" method="POST">
+            <label for="unique-number" style="color: white; font-size: 18px;">Unique-number</label>
+            <input type="password" id="password" name="unique-number" placeholder="Enter your unique number" required>
+            <div id="loginError" style="color: red; display: none;"></div>
+            <button type="submit">Login</button>
+        </form>
     </div>
-
+</div>
     <script>
         document.getElementById("loginform").addEventListener("submit", function (event) {
             let passwordField = document.getElementById("password");
@@ -109,6 +108,22 @@
                 errorDiv.style.display = "none";
             }
         });
+
+        document.getElementById('loginform').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the form from submitting the traditional way
+
+        var password = document.getElementById('password').value;
+        var errorDiv = document.getElementById('loginError');
+
+        if (password === '2457') {
+            // Redirect to organiserhome.php if the password is correct
+            window.location.href = 'organiserhome.php';
+        } else {
+            // Show error message if the password is incorrect
+            errorDiv.style.display = 'block';
+            errorDiv.textContent = 'Incorrect unique number. Please try again.';
+        }
+    });
     </script>
 </body>
 
