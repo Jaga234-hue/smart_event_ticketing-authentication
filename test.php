@@ -1,125 +1,39 @@
-<?php
-$showAnimation = true; // Change this based on your condition
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bombastic Benchmark Animation</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: #0e0e0e;
-            overflow: hidden;
-        }
-        
-        /* LOADING SCREEN */
-        .loading {
-            position: absolute;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100vw;
-            height: 100vh;
-            background: #111;
-            z-index: 100;
-            font-size: 2rem;
-            color: white;
-            font-family: Arial, sans-serif;
-            animation: fadeOut 1s 1s forwards;
-        }
-
-        @keyframes fadeOut {
-            100% {
-                opacity: 0;
-                visibility: hidden;
-            }
-        }
-
-        /* ANIMATION CONTAINER */
-        .benchmark {
-            width: 200px;
-            height: 200px;
-            position: relative;
-            display: none;
-        }
-
-        /* MODERN BOMBASTIC ANIMATION */
-        .benchmark div {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border: 4px solid transparent;
-            border-radius: 50%;
-            animation: rotate 2s linear infinite, pulse 2s ease-in-out infinite alternate;
-        }
-
-        .benchmark div:nth-child(1) {
-            border-color: #ff004c;
-            animation-delay: 0s;
-        }
-
-        .benchmark div:nth-child(2) {
-            border-color: #ff8200;
-            animation-delay: 0.2s;
-        }
-
-        .benchmark div:nth-child(3) {
-            border-color: #00ffcc;
-            animation-delay: 0.4s;
-        }
-
-        .benchmark div:nth-child(4) {
-            border-color: #007bff;
-            animation-delay: 0.6s;
-        }
-
-        @keyframes rotate {
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        @keyframes pulse {
-            100% {
-                transform: scale(1.2);
-            }
-        }
-
-    </style>
+    <title>Document</title>
 </head>
 <body>
-
-<?php if ($showAnimation): ?>
-    <!-- LOADING SCREEN -->
-    <div class="loading">Loading...</div>
-
-    <!-- BOMBASTIC BENCHMARK ANIMATION -->
-    <div class="benchmark" id="benchmark">
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
-
-    <script>
-        setTimeout(() => {
-            document.getElementById("benchmark").style.display = "block";
-        }, 1000);
-    </script>
-<?php else: ?>
-    <h2 style="color: white;">Animation is disabled</h2>
-<?php endif; ?>
-
+    
 </body>
+<input type="file" id="qr-input">
+<script src="https://cdn.jsdelivr.net/npm/jsqr"></script>
+<script>
+document.getElementById("qr-input").addEventListener("change", function (event) {
+    let file = event.target.files[0];
+    let reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function () {
+        let img = new Image();
+        img.src = reader.result;
+        img.onload = function () {
+            let canvas = document.createElement("canvas");
+            let ctx = canvas.getContext("2d");
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            let code = jsQR(imageData.data, canvas.width, canvas.height);
+            if (code) {
+                alert("QR Code Content: " + code.data);
+            } else {
+                alert("No QR Code found!");
+            }
+        };
+    };
+});
+</script>
+
 </html>

@@ -121,7 +121,6 @@
     </style>
 </head>
 <body>
-
     <div class="container">
         <div class="scanner-box">
             <div class="scanner-title">Scanner</div>
@@ -137,8 +136,12 @@
         </div>
     </div>
 
+    <!-- Include jsQR library -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+
     <script>
         let videoStream;
+        let qrCodeData = null; // Variable to store the decoded QR code data
 
         function openScanner() {
             let modal = document.getElementById('scannerModal');
@@ -147,7 +150,11 @@
             navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
                 .then(stream => {
                     videoStream = stream;
-                    document.getElementById('cameraFeed').srcObject = stream;
+                    let video = document.getElementById('cameraFeed');
+                    video.srcObject = stream;
+
+                    // Start scanning for QR codes
+                    scanQRCode(video);
                 })
                 .catch(err => {
                     alert("Camera access denied or not available.");
@@ -164,7 +171,69 @@
                 tracks.forEach(track => track.stop());
             }
         }
-    </script>
 
+        function scanQRCode(video) {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+
+            function tick() {
+                if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                    const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                        inversionAttempts: "dontInvert",
+                    });
+
+                    if (code) {
+                        qrCodeData = code.data; // Save the decoded data
+                        console.log("QR Code Data:", qrCodeData);
+
+                        // Send the QR code data to the server
+                        sendQRCodeData(qrCodeData);
+
+                        // Close the scanner after successful scan
+                        closeScanner();
+                    }
+                }
+                requestAnimationFrame(tick); // Continue scanning
+            }
+
+            tick(); // Start the scanning loop
+        }
+        function sendQRCodeData(data) {
+    console.log("Sending QR Code Data:", data);
+
+    // Create a FormData object to send the data
+    const formData = new FormData();
+    formData.append('qrCodeData', data); // Add the QR code data to the form
+
+    // Send the data to the server using fetch
+    fetch('authentication.php', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'Accept': 'application/json', // Optional: Specify the response type
+        },
+    })
+    .then(response => {
+        console.log("Response Status:", response.status);
+        return response.text();
+    })
+    .then(result => {
+        console.log("Server Response:", result);
+        alert("QR Code Data Sent Successfully!"); // Optional: Notify the user
+
+        // Redirect to authentication.php after successful submission
+        window.location.href = 'authentication.php';
+    })
+    .catch(error => {
+        console.error("Error sending QR code data:", error);
+        alert("Failed to send QR code data."); // Optional: Notify the user
+    });
+}
+    </script>
 </body>
 </html>
