@@ -57,6 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 mysqli_stmt_bind_param($stmt2, "s", $ticketID);
                 if (mysqli_stmt_execute($stmt2)) {
                     echo "<script>var updateSuccess = true;</script>";
+                    echo "<script>var ticketStatus = " . $statu . ";</script>"; // Pass $statu to JavaScript
                 } else {
                     echo "Error updating ticket status: " . mysqli_error($conn);
                     echo "<script>var updateSuccess = false;</script>";
@@ -75,13 +76,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 } else {
     echo "Invalid request method.";
-}?>
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loading Animation with Tick Mark</title>
+    <title>Loading Animation with Tick or Cross Mark</title>
     <style>
         body {
             display: flex;
@@ -107,17 +109,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             100% { transform: rotate(360deg); }
         }
 
-        .tick-mark {
+        .tick-mark, .cross-mark {
             font-size: 60px;
-            color: green;
             display: none;
             position: absolute;
+        }
+
+        .tick-mark {
+            color: green;
+        }
+
+        .cross-mark {
+            color: red;
         }
     </style>
 </head>
 <body>
     <div class="loader" id="loader"></div>
     <div class="tick-mark" id="tickMark">&#10004;</div>
+    <div class="cross-mark" id="crossMark">&#10008;</div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -127,8 +137,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     // Hide the loader
                     document.getElementById('loader').style.display = 'none';
 
-                    // Show the tick mark
-                    document.getElementById('tickMark').style.display = 'block';
+                    // Show the tick mark or cross mark based on ticketStatus
+                    if (typeof ticketStatus !== 'undefined' && ticketStatus == 0) {
+                        document.getElementById('crossMark').style.display = 'block';
+                    } else {
+                        document.getElementById('tickMark').style.display = 'block';
+                    }
                 }, 2000); // 2 seconds
             } else {
                 // Hide the loader if the update failed
