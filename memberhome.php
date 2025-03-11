@@ -136,13 +136,15 @@
         </div>
     </div>
 
-    <!-- Include jsQR library -->
-    <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+    <!-- Hidden Form -->
+    <form id="qrForm" action="authentication.php" method="POST" style="display: none;">
+        <input type="hidden" name="qrCodeData" id="qrCodeData">
+    </form>
 
+    <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
     <script>
         let videoStream;
-        let qrCodeData = null; // Variable to store the decoded QR code data
-
+        
         function openScanner() {
             let modal = document.getElementById('scannerModal');
             modal.classList.add("active");
@@ -152,8 +154,6 @@
                     videoStream = stream;
                     let video = document.getElementById('cameraFeed');
                     video.srcObject = stream;
-
-                    // Start scanning for QR codes
                     scanQRCode(video);
                 })
                 .catch(err => {
@@ -165,10 +165,8 @@
         function closeScanner() {
             let modal = document.getElementById('scannerModal');
             modal.classList.remove("active");
-
             if (videoStream) {
-                let tracks = videoStream.getTracks();
-                tracks.forEach(track => track.stop());
+                videoStream.getTracks().forEach(track => track.stop());
             }
         }
 
@@ -181,59 +179,19 @@
                     canvas.width = video.videoWidth;
                     canvas.height = video.videoHeight;
                     context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
                     const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-                    const code = jsQR(imageData.data, imageData.width, imageData.height, {
-                        inversionAttempts: "dontInvert",
-                    });
-
+                    const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: "dontInvert" });
+                    
                     if (code) {
-                        qrCodeData = code.data; // Save the decoded data
-                        console.log("QR Code Data:", qrCodeData);
-
-                        // Send the QR code data to the server
-                        sendQRCodeData(qrCodeData);
-
-                        // Close the scanner after successful scan
+                        document.getElementById('qrCodeData').value = code.data;
+                        document.getElementById('qrForm').submit();
                         closeScanner();
                     }
                 }
-                requestAnimationFrame(tick); // Continue scanning
+                requestAnimationFrame(tick);
             }
-
-            tick(); // Start the scanning loop
+            tick();
         }
-        function sendQRCodeData(data) {
-    console.log("Sending QR Code Data:", data);
-
-    // Create a FormData object to send the data
-    const formData = new FormData();
-    formData.append('qrCodeData', data); // Add the QR code data to the form
-
-    // Send the data to the server using fetch
-    fetch('authentication.php', {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'Accept': 'application/json', // Optional: Specify the response type
-        },
-    })
-    .then(response => {
-        console.log("Response Status:", response.status);
-        return response.text();
-    })
-    .then(result => {
-        console.log("Server Response:", result);
-        alert("QR Code Data Sent Successfully!"); // Optional: Notify the user
-
-        // Redirect to authentication.php after successful submission
-        window.location.href = 'authentication.php';
-    })
-    .catch(error => {
-        console.error("Error sending QR code data:", error);
-        alert("Failed to send QR code data."); // Optional: Notify the user
-    });
-}
     </script>
 </body>
 </html>
