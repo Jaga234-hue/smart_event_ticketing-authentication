@@ -151,7 +151,8 @@ if (mysqli_num_rows($result) == 0) {
         button:active {
             transform: scale(0.95);
         }
-        #cross{
+
+        #cross {
             cursor: pointer;
             width: 100px;
             height: fit-content;
@@ -160,13 +161,129 @@ if (mysqli_num_rows($result) == 0) {
             background-color: red;
             margin-left: 120px;
             text-decoration: solid;
-         }
-         #cross:hover{
+        }
+
+        #cross:hover {
             color: white;
             font-weight: bold;
-            background: linear-gradient(135deg,rgb(120, 124, 129), #00c6ff);
+            background: linear-gradient(135deg, rgb(120, 124, 129), #00c6ff);
             transform: scale(2.05);
-         }
+        }
+
+        .event-list {
+            background: black;
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .event {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 8px 0;
+            border-radius: 5px;
+            transition: transform 0.2s ease-in-out;
+            cursor: pointer;
+        }
+
+        .event:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .search {
+            width: 90%;
+            padding: 12px;
+            margin: 15px auto;
+            display: block;
+            border: 2px solid #007bff;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        /* Event List */
+        .verified-list {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f9;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .verified-list h3 {
+            color: #2c3e50;
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3498db;
+        }
+
+        .verified-list table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 30px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .verified-list table th,
+        .verified-list table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .verified-list table th {
+            background-color: #3498db;
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .verified-list table td {
+            color: #555;
+        }
+
+        .verified-list table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .verified-list table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .verified-list table tr:hover {
+            background-color: #f1f8ff;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Responsive Design for Mobile */
+        @media (max-width: 768px) {
+            .verified-list table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .verified-list table th,
+            .verified-list table td {
+                min-width: 120px;
+            }
+
+            .verified-list h3 {
+                font-size: 22px;
+            }
+        }
     </style>
 </head>
 
@@ -208,7 +325,59 @@ if (mysqli_num_rows($result) == 0) {
             <div id="cross" style="display: block;">✖</div>
         </div>
     </div>
-    
+    <input type="text" class="search" id="searchInput" onkeyup="filterEvents()" placeholder="Search event with name or date">
+    <div class="evens-list" id="events">
+        <?php
+        $sql = "SELECT Event_ID, Name, Date, Location FROM event";
+        $result = $conn->query($sql);
+
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                echo '<div class="event" data-id="' . htmlspecialchars($row['Event_ID']) . '" data-date="' . htmlspecialchars($row['Date']) . '" data-location="' . htmlspecialchars($row['Location']) . '">' . htmlspecialchars($row['Name']) . '</div>';
+            }
+        } else {
+            echo "<div class='event'>No events found</div>";
+        }
+        ?>
+    </div>
+    <div class="total_verified" id="total_verified">
+        <button class="detailBtn" id="detailBtn" onclick="showList()"> Details </button>
+    </div>
+    <div class="verified-list" id="verified-list" style="display: none;">
+        <?php
+        // Assuming the database connection is already established
+
+        // Query to select name, eventname, and datetime where status is 'successful'
+        $query = "SELECT Name, Event_name, datetime FROM authentication WHERE status = 'successful'";
+        $result = mysqli_query($conn, $query); // Replace $connection with your actual connection variable
+
+        // Array to hold events and their corresponding data
+        $events = [];
+
+        // Fetch data and organize by event name
+        while ($row = mysqli_fetch_assoc($result)) {
+            $eventName = $row['Event_name'];
+            if (!isset($events[$eventName])) {
+                $events[$eventName] = [];
+            }
+            $events[$eventName][] = $row;
+        }
+
+        // Generate a table for each event
+        foreach ($events as $eventName => $attendees) {
+            echo "<h3>Event: $eventName</h3>";
+            echo "<table border='1'>";
+            echo "<tr><th>Name</th><th>Date Time</th></tr>";
+            foreach ($attendees as $attendee) {
+                echo "<tr>";
+                echo "<td>" . htmlspecialchars($attendee['Name']) . "</td>";
+                echo "<td>" . htmlspecialchars($attendee['datetime']) . "</td>";
+                echo "</tr>";
+            }
+            echo "</table>";
+        }
+        ?>
+    </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         function approveUser(email) {
@@ -260,7 +429,7 @@ if (mysqli_num_rows($result) == 0) {
             formbox.style.display = "none";
             addbtn.style.display = "block";
         })
-        
+
         addbtn.addEventListener("click", function() {
             formbox.style.display = "block";
             addbtn.style.display = "none";
@@ -280,10 +449,10 @@ if (mysqli_num_rows($result) == 0) {
                     processData: false,
                     success: function(response) {
                         alert("Event added successfully!"); // Show success message
-                        
-            formbox.style.display = "none";
-            addbtn.style.display = "block";
-            location.reload();
+
+                        formbox.style.display = "none";
+                        addbtn.style.display = "block";
+                        location.reload();
                     },
                     error: function() {
                         alert("Error occurred while submitting."); // Show error message
@@ -291,9 +460,23 @@ if (mysqli_num_rows($result) == 0) {
                 });
             });
         });
-        
-          
- 
+        //search event functionality
+        function filterEvents() {
+            const input = document.getElementById("searchInput").value.toLowerCase();
+            const events = document.querySelectorAll(".event");
+            events.forEach(event => {
+                event.style.display = event.innerText.toLowerCase().includes(input) ? "flex" : "none";
+            });
+        }
+        //list shown
+        function showList() {
+            const list = document.getElementById("verified-list");
+            if (list.style.display === "none") {
+                list.style.display = "block";
+            } else {
+                list.style.display = "none";
+            }
+        }
     </script>
 </body>
 

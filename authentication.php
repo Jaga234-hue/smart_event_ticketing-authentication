@@ -80,6 +80,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 echo "Error preparing statement: " . mysqli_error($conn);
             }
 
+            //find event id by ticket id
+            $query3 = "SELECT Event_ID FROM payment WHERE Ticket_ID = ?";
+            $stmt4 = $conn->prepare($query3);
+            $stmt4->bind_param("i", $ticketID);
+            $stmt4->execute();
+            $stmt4->store_result();
+
+            $stmt4->bind_result($eventid);
+            $stmt4->fetch(); // Fetch the result into $eventid
+
+            $stmt4->close(); // Close the statement after use
+
+            // Now you can use $eventid and $ticketID for further processing
+            //find event name through event id
+            $query4 = "SELECT Name FROM event WHERE Event_ID = ?";
+            $stmt5 = $conn->prepare($query4);
+            $stmt5->bind_param("i", $eventid);
+            $stmt5->execute();
+            $stmt5->store_result();
+
+            $stmt5->bind_result($eventname);
+            $stmt5->fetch(); // Fetch the result into $eventname
+
+            $stmt5->close(); // Close the statement after use
+
+            // Function to generate a unique authentication_id
 
             function generateUniqueAuthID($conn)
             {
@@ -103,11 +129,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $status = $status_authentication; // Leave blank or provide a value
 
             // Prepare the SQL statement
-            $query2 = "INSERT INTO authentication (Ticket_ID,Name,authentication_id, datetime, status) VALUES (?,?,?, NOW(), ?)";
+            $query2 = "INSERT INTO authentication (Ticket_ID,Name,authentication_id, datetime, status,Event_name	
+) VALUES (?,?,?, NOW(), ?, ?)";
             $stmt2 = $conn->prepare($query2);
 
             // access cookie value
-            
+
             if (isset($_COOKIE["user_id"]) && isset($_COOKIE["username"]) && isset($_COOKIE["email"]) && isset($_COOKIE["phone"])) {
                 $user_id = $_COOKIE["user_id"];
                 $username = $_COOKIE["username"];
@@ -118,7 +145,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
             if ($stmt2) {
                 // Bind parameters
-                $stmt2->bind_param("isis",$ticketID, $username,$authentication_id, $status);
+                $stmt2->bind_param("isiss", $ticketID, $username, $authentication_id, $status, $eventname);
 
                 // Execute the query
                 if ($stmt2->execute()) {
