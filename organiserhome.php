@@ -38,7 +38,9 @@ if (mysqli_num_rows($result) == 0) {
             padding: 20px;
             flex-direction: column;
             align-items: center;
-            overflow-x: hidden; /* Hide horizontal scrollbar */
+            overflow-x: hidden;
+            /* Hide horizontal scrollbar */
+            overflow: auto !important;
         }
 
         /* Styling for the Event Details Form */
@@ -210,19 +212,44 @@ if (mysqli_num_rows($result) == 0) {
 
         /* Verified List */
         .verified-list {
-            display: flex;
+            position: fixed;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 20px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
             padding: 20px;
-            background-color: #f4f4f9;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            width: 500px;
+            background: rgba(0, 0, 0, 0.9);
+            /* Dark theme */
+            color: white;
+            /* Text color */
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
             text-align: center;
+            display: none;
+            /* Initially hidden */
+            z-index: 1000;
+            max-height: 80vh;
+            /* Limits height to 80% of the viewport */
+            overflow-y: auto;
+            /* Enables vertical scrolling */
         }
+        #popupcls {
+    position: fixed; /* Fix it independently */
+    bottom: 20px; /* Distance from bottom */
+    right: 20px; /* Adjust as needed */
+    background-color: #ff5722;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 1100; /* Ensure it's above .verified-list */
+    overflow: hidden;
+}
 
         .verified-list h3 {
-            color: #2c3e50;
+            color:rgb(186, 193, 201);
             font-size: 26px;
             font-weight: 600;
             margin-bottom: 20px;
@@ -329,8 +356,10 @@ if (mysqli_num_rows($result) == 0) {
         ?>
     </div>
     <div class="total_verified" id="total_verified">
+        
         <button class="detailBtn" id="detailBtn" onclick="showList()"> Details </button>
     </div>
+    <button id="popupcls" style="display: none;"> <-- GO BACK </button>
     <div class="verified-list" id="verified-list" style="display: none;">
         <?php
         // Assuming the database connection is already established
@@ -457,14 +486,23 @@ if (mysqli_num_rows($result) == 0) {
             });
         }
         //list shown
+        const cls = document.getElementById("popupcls");
         function showList() {
             const list = document.getElementById("verified-list");
             if (list.style.display === "none") {
                 list.style.display = "block";
+                cls.style.display = "block";
             } else {
                 list.style.display = "none";
             }
         }
+        cls.addEventListener("click", function() {
+            const list = document.getElementById("verified-list");
+            list.style.display = "none";
+            cls.style.display = "none";
+
+        })
+        /* document.body.style.overflow = "hidden"; // REMOVE or CHANGE THIS if applied */
     </script>
 </body>
 
