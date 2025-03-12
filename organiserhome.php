@@ -40,7 +40,6 @@ if (mysqli_num_rows($result) == 0) {
             align-items: center;
             overflow-x: hidden;
             /* Hide horizontal scrollbar */
-            overflow: auto !important;
         }
 
         /* Styling for the Event Details Form */
@@ -185,13 +184,15 @@ if (mysqli_num_rows($result) == 0) {
 
         .event {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             padding: 12px;
             background: rgba(255, 255, 255, 0.1);
             margin: 8px 0;
             border-radius: 5px;
             transition: transform 0.2s ease-in-out;
             cursor: pointer;
+            width: 500px;
+
         }
 
         .event:hover {
@@ -200,7 +201,7 @@ if (mysqli_num_rows($result) == 0) {
         }
 
         .search {
-            width: 90%;
+            width: 520px;
             padding: 12px;
             margin: 15px auto;
             display: block;
@@ -208,6 +209,10 @@ if (mysqli_num_rows($result) == 0) {
             border-radius: 5px;
             text-align: center;
             font-size: 16px;
+        }
+        .search:hover{
+            transform: scale(1.03);
+            background: rgb(255, 255, 255);
         }
 
         /* Verified List */
@@ -217,7 +222,7 @@ if (mysqli_num_rows($result) == 0) {
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 600px;
+            width: 520px;
             padding: 20px;
             background: rgba(0, 0, 0, 0.9);
             /* Dark theme */
@@ -234,22 +239,27 @@ if (mysqli_num_rows($result) == 0) {
             overflow-y: auto;
             /* Enables vertical scrolling */
         }
+
         #popupcls {
-    position: fixed; /* Fix it independently */
-    bottom: 20px; /* Distance from bottom */
-    right: 20px; /* Adjust as needed */
-    background-color: #ff5722;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    z-index: 1100; /* Ensure it's above .verified-list */
-    overflow: hidden;
-}
+            position: fixed;
+            /* Fix it independently */
+            bottom: 20px;
+            /* Distance from bottom */
+            right: 20px;
+            /* Adjust as needed */
+            background-color: #ff5722;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1100;
+            /* Ensure it's above .verified-list */
+            overflow: hidden;
+        }
 
         .verified-list h3 {
-            color:rgb(186, 193, 201);
+            color: rgb(186, 193, 201);
             font-size: 26px;
             font-weight: 600;
             margin-bottom: 20px;
@@ -356,154 +366,155 @@ if (mysqli_num_rows($result) == 0) {
         ?>
     </div>
     <div class="total_verified" id="total_verified">
-        
+
         <button class="detailBtn" id="detailBtn" onclick="showList()"> Details </button>
     </div>
     <button id="popupcls" style="display: none;"> <-- GO BACK </button>
-    <div class="verified-list" id="verified-list" style="display: none;">
-        <?php
-        // Assuming the database connection is already established
+            <div class="verified-list" id="verified-list" style="display: none;">
+                <?php
+                // Assuming the database connection is already established
 
-        // Query to select name, eventname, and datetime where status is 'successful'
-        $query = "SELECT Name, Event_name, datetime FROM authentication WHERE status = 'successful'";
-        $result = mysqli_query($conn, $query); // Replace $connection with your actual connection variable
+                // Query to select name, eventname, and datetime where status is 'successful'
+                $query = "SELECT Name, Event_name, datetime FROM authentication WHERE status = 'successful'";
+                $result = mysqli_query($conn, $query); // Replace $connection with your actual connection variable
 
-        // Array to hold events and their corresponding data
-        $events = [];
+                // Array to hold events and their corresponding data
+                $events = [];
 
-        // Fetch data and organize by event name
-        while ($row = mysqli_fetch_assoc($result)) {
-            $eventName = $row['Event_name'];
-            if (!isset($events[$eventName])) {
-                $events[$eventName] = [];
-            }
-            $events[$eventName][] = $row;
-        }
-
-        // Generate a table for each event
-        foreach ($events as $eventName => $attendees) {
-            echo "<h3>Event: $eventName</h3>";
-            echo "<table border='1'>";
-            echo "<tr><th>Name</th><th>Date Time</th></tr>";
-            foreach ($attendees as $attendee) {
-                echo "<tr>";
-                echo "<td>" . htmlspecialchars($attendee['Name']) . "</td>";
-                echo "<td>" . htmlspecialchars($attendee['datetime']) . "</td>";
-                echo "</tr>";
-            }
-            echo "</table>";
-        }
-        ?>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        function approveUser(email) {
-            fetch('approve_user.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: `email=${encodeURIComponent(email)}`
-                })
-                .then(response => response.text())
-                .then(result => {
-                    console.log("Approval result:", result);
-                    if (result.trim() === "approved") {
-                        alert("User approved successfully!");
-                        location.reload();
-                    } else {
-                        alert("Approval failed.");
+                // Fetch data and organize by event name
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $eventName = $row['Event_name'];
+                    if (!isset($events[$eventName])) {
+                        $events[$eventName] = [];
                     }
-                })
-                .catch(error => console.error("Error approving user:", error));
-        }
+                    $events[$eventName][] = $row;
+                }
 
-        function rejectUser(email) {
-            fetch('reject_user.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: `email=${encodeURIComponent(email)}`
-                })
-                .then(response => response.text())
-                .then(result => {
-                    console.log("Rejection result:", result);
-                    if (result.trim() === "rejected") {
-                        alert("User rejected successfully!");
-                        location.reload();
-                    } else {
-                        alert("Rejection failed.");
+                // Generate a table for each event
+                foreach ($events as $eventName => $attendees) {
+                    echo "<h3>Event: $eventName</h3>";
+                    echo "<table border='1'>";
+                    echo "<tr><th>Name</th><th>Date Time</th></tr>";
+                    foreach ($attendees as $attendee) {
+                        echo "<tr>";
+                        echo "<td>" . htmlspecialchars($attendee['Name']) . "</td>";
+                        echo "<td>" . htmlspecialchars($attendee['datetime']) . "</td>";
+                        echo "</tr>";
                     }
+                    echo "</table>";
+                }
+                ?>
+            </div>
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script>
+                function approveUser(email) {
+                    fetch('approve_user.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            body: `email=${encodeURIComponent(email)}`
+                        })
+                        .then(response => response.text())
+                        .then(result => {
+                            console.log("Approval result:", result);
+                            if (result.trim() === "approved") {
+                                alert("User approved successfully!");
+                                location.reload();
+                            } else {
+                                alert("Approval failed.");
+                            }
+                        })
+                        .catch(error => console.error("Error approving user:", error));
+                }
+
+                function rejectUser(email) {
+                    fetch('reject_user.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            body: `email=${encodeURIComponent(email)}`
+                        })
+                        .then(response => response.text())
+                        .then(result => {
+                            console.log("Rejection result:", result);
+                            if (result.trim() === "rejected") {
+                                alert("User rejected successfully!");
+                                location.reload();
+                            } else {
+                                alert("Rejection failed.");
+                            }
+                        })
+                        .catch(error => console.error("Error rejecting user:", error));
+                }
+                const addbtn = document.getElementById("add");
+                const formbox = document.getElementById("details-of-event");
+                const submitbtn = document.getElementById("submit");
+                const cross = document.getElementById("cross");
+                cross.addEventListener("click", function() {
+                    formbox.style.display = "none";
+                    addbtn.style.display = "block";
                 })
-                .catch(error => console.error("Error rejecting user:", error));
-        }
-        const addbtn = document.getElementById("add");
-        const formbox = document.getElementById("details-of-event");
-        const submitbtn = document.getElementById("submit");
-        const cross = document.getElementById("cross");
-        cross.addEventListener("click", function() {
-            formbox.style.display = "none";
-            addbtn.style.display = "block";
-        })
 
-        addbtn.addEventListener("click", function() {
-            formbox.style.display = "block";
-            addbtn.style.display = "none";
-        })
-        //ajax for adding event
-        $(document).ready(function() {
-            $("#eventForm").on("submit", function(e) {
-                e.preventDefault(); // Prevent default form submission
+                addbtn.addEventListener("click", function() {
+                    formbox.style.display = "block";
+                    addbtn.style.display = "none";
+                })
+                //ajax for adding event
+                $(document).ready(function() {
+                    $("#eventForm").on("submit", function(e) {
+                        e.preventDefault(); // Prevent default form submission
 
-                var formData = new FormData(this); // Create form data object
+                        var formData = new FormData(this); // Create form data object
 
-                $.ajax({
-                    url: "userhome.php", // PHP script to process the form
-                    type: "POST",
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    success: function(response) {
-                        alert("Event added successfully!"); // Show success message
+                        $.ajax({
+                            url: "userhome.php", // PHP script to process the form
+                            type: "POST",
+                            data: formData,
+                            contentType: false,
+                            processData: false,
+                            success: function(response) {
+                                alert("Event added successfully!"); // Show success message
 
-                        formbox.style.display = "none";
-                        addbtn.style.display = "block";
-                        location.reload();
-                    },
-                    error: function() {
-                        alert("Error occurred while submitting."); // Show error message
-                    }
+                                formbox.style.display = "none";
+                                addbtn.style.display = "block";
+                                location.reload();
+                            },
+                            error: function() {
+                                alert("Error occurred while submitting."); // Show error message
+                            }
+                        });
+                    });
                 });
-            });
-        });
-        //search event functionality
-        function filterEvents() {
-            const input = document.getElementById("searchInput").value.toLowerCase();
-            const events = document.querySelectorAll(".event");
-            events.forEach(event => {
-                event.style.display = event.innerText.toLowerCase().includes(input) ? "flex" : "none";
-            });
-        }
-        //list shown
-        const cls = document.getElementById("popupcls");
-        function showList() {
-            const list = document.getElementById("verified-list");
-            if (list.style.display === "none") {
-                list.style.display = "block";
-                cls.style.display = "block";
-            } else {
-                list.style.display = "none";
-            }
-        }
-        cls.addEventListener("click", function() {
-            const list = document.getElementById("verified-list");
-            list.style.display = "none";
-            cls.style.display = "none";
+                //search event functionality
+                function filterEvents() {
+                    const input = document.getElementById("searchInput").value.toLowerCase();
+                    const events = document.querySelectorAll(".event");
+                    events.forEach(event => {
+                        event.style.display = event.innerText.toLowerCase().includes(input) ? "flex" : "none";
+                    });
+                }
+                //list shown
+                const cls = document.getElementById("popupcls");
 
-        })
-        /* document.body.style.overflow = "hidden"; // REMOVE or CHANGE THIS if applied */
-    </script>
+                function showList() {
+                    const list = document.getElementById("verified-list");
+                    if (list.style.display === "none") {
+                        list.style.display = "block";
+                        cls.style.display = "block";
+                    } else {
+                        list.style.display = "none";
+                    }
+                }
+                cls.addEventListener("click", function() {
+                    const list = document.getElementById("verified-list");
+                    list.style.display = "none";
+                    cls.style.display = "none";
+
+                })
+                /* document.body.style.overflow = "hidden"; // REMOVE or CHANGE THIS if applied */
+            </script>
 </body>
 
 </html>
