@@ -13,31 +13,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->execute();
     $result = $stmt->get_result();
 
-    if ($result->num_rows > 0) {
+    if ($result->num_rows == 1) {
         $row = $result->fetch_assoc();
+        if (password_verify($password, $row['Password'])) {
+            // Authentication successful
+            $_SESSION['admin_id'] = $row['Admin_ID'];
+            $_SESSION['admin_name'] = $row['Name'];
 
-        // Verify password
-        if (password_verify($password, $row['password'])) {
-            $_SESSION['user'] = $email; // Store session
+            // Check the status of the user
+            $checksql = "SELECT status FROM notifications WHERE user_email = ?"; 
+            $stm = $conn->prepare($checksql);
+            $stm->bind_param("s", $email);
+            $stm->execute();
+            $statusResult = $stm->get_result();
 
-            // Redirect based on email
-            if ($email === "payment@gmail.com") {
-                header("Location: cashcheck.php");
+            if ($statusResult->num_rows == 1) {
+                $statusRow = $statusResult->fetch_assoc();
+                $status = $statusRow['status'];
+
+                if ($status == 'approved') {
+                    header("Location: memberhome.php");
+                } else {
+                    header("Location: memberload.php");
+                }
+                exit();
             } else {
-                header("Location: memberhome.php");
+                echo "User status not found.";
             }
-            exit();
         } else {
-            // Invalid password
-            echo "<script>alert('Invalid email or password'); window.location.href='login.php';</script>";
+            echo "Invalid email or password.";
         }
     } else {
-        // Invalid email
-        echo "<script>alert('Invalid email or password'); window.location.href='login.php';</script>";
+        echo "Invalid email or password.";
     }
-
     $stmt->close();
+    $stm->close();
 }
-
 $conn->close();
 ?>
