@@ -394,29 +394,57 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         .downloadQR {
             position: fixed;
-            top: 27.5%;
-            /* Center vertically */
-            left: -200px;
-            /* Start completely off-screen */
+            top: 50%;
+            left: -260px;
             transform: translateY(-50%);
-            /* Centering trick */
             height: 400px;
-            width: 250px;
-            background-color: #ddd;
-            border-right: 5px solid black;
-            border-bottom: 2px solid green;
-            transition: left 0.5s ease-in-out;
-            /* Smooth left-to-right animation */
+            width: 260px;
+            background: linear-gradient(135deg, #4CAF50, #2E8B57);
+            border-right: 5px solid #1B5E20;
+            border-bottom: 3px solid #0A3D62;
+            transition: left 0.5s ease-in-out, box-shadow 0.3s ease-in-out;
             z-index: 9999;
-            /* Ensure it's on top */
-            border-top-right-radius: 10%;
-            border-bottom-right-radius: 10%;
+            border-top-right-radius: 30px;
+            border-bottom-right-radius: 30px;
+            box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         /* When the popup is active, slide it fully into view */
         .downloadQR.show {
             left: 0;
-            /* Moves it to the visible area */
+            box-shadow: 6px 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Add some stylish effect for the content inside */
+        .downloadQR h2 {
+            color: #fff;
+            font-size: 20px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .downloadQR button {
+            background-color: #ffffff;
+            color: #2E8B57;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .downloadQR button:hover {
+            background-color: #2E8B57;
+            color: #ffffff;
+            transform: scale(1.1);
         }
     </style>
 </head>
@@ -534,8 +562,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <button class="proceed" id="proceedButton" type="submit">
                         Proceed <span>➡</span>
                     </button>
-                    <button id="closePopup" class="close-btn">✖</button>
                 </form>
+                <div class="hide" id="hide" style="height: fit-content; width:100px; background:#007bff; cursor:pointer">skip</div>
             </div>
         </div>
 
@@ -552,23 +580,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         const profileDetails = document.getElementById('profileDetails');
         const profile = document.getElementById('profile');
         const closeProfile = document.querySelector('.close-profile');
-        const overlay = document.createElement('div');
-        overlay.classList.add('overlay');
-        document.body.appendChild(overlay);
-
-        // Profile open and close functionality
-        profile.addEventListener('click', () => {
-            profileDetails.style.display = 'block';
-            overlay.style.display = 'block';
-        });
-
-        closeProfile.addEventListener('click', closeOverlay);
-        overlay.addEventListener('click', closeOverlay);
-
-        function closeOverlay() {
-            profileDetails.style.display = 'none';
-            overlay.style.display = 'none';
-        }
+        const overlay = document.getElementById('overlay');
+        const menuOptions = document.getElementById('menuOptions');
+        const downloadQR = document.getElementById('downloadQR');
+        const MYQrCode = document.getElementById('MYQr');
+        const closeQRButton = document.getElementById('closePopup');
+        const eventPopup = document.getElementById('eventPopup');
+        const hidePopup = document.getElementById('hide');
 
         // Slider functionality
         function nextSlide() {
@@ -582,83 +600,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             currentIndex = (currentIndex - 1 + 3) % 3;
             slider.style.transform = `translateX(-${currentIndex * 100}%)`;
         }
+
+        // Auto-advance slides every 3 seconds
         setInterval(nextSlide, 3000);
-        const menu = document.getElementById("menuOptions");
-        const dot = document.getElementById("menu");
-        // Toggle menu
+
+        // Menu toggle
         function toggleMenu() {
-            menu.style.display = menu.style.display === "block" ? "none" : "block";
-            dot.style.backgroundColor = white;
+            menuOptions.style.display = menuOptions.style.display === "block" ? "none" : "block";
         }
 
-        // Filter events
-        function filterEvents() {
-            const input = document.getElementById("searchInput").value.toLowerCase();
-            const events = document.querySelectorAll(".event");
-            events.forEach(event => {
-                event.style.display = event.innerText.toLowerCase().includes(input) ? "flex" : "none";
-            });
-        }
-
-        // Event selection popup functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const events = document.querySelectorAll('.event');
-            const popup = document.getElementById('eventPopup');
-            const overlay = document.getElementById('overlay');
-            const popupEventName = document.getElementById('popupEventName');
-            const popupEventDate = document.getElementById('popupEventDate');
-            const popupEventLocation = document.getElementById('popupEventLocation');
-            const closePopupButton = document.getElementById('closePopup');
-            const eventNameInput = document.getElementById('eventNameInput');
-            const eventDateInput = document.getElementById('eventDateInput');
-            const eventLocationInput = document.getElementById('eventLocationInput');
-
-            events.forEach(event => {
-                event.addEventListener('click', function() {
-                    const eventName = this.textContent;
-                    const eventDate = this.getAttribute('data-date');
-                    const eventLocation = this.getAttribute('data-location');
-
-                    popupEventName.textContent = eventName;
-                    popupEventDate.textContent = eventDate;
-                    popupEventLocation.textContent = eventLocation;
-
-                    eventNameInput.value = eventName;
-                    eventDateInput.value = eventDate;
-                    eventLocationInput.value = eventLocation;
-
-                    popup.style.display = 'block';
-                    overlay.style.display = 'block';
-                });
-            });
-
-            closePopupButton.addEventListener('click', closePopup);
-            overlay.addEventListener('click', closePopup);
-
-            function closePopup() {
-                popup.style.display = 'none';
-                overlay.style.display = 'none';
-            }
+        // Profile handling
+        profile.addEventListener('click', () => {
+            profileDetails.style.display = 'block';
+            overlay.style.display = 'block';
         });
 
-        const downloadQR = document.getElementById("downloadQR");
-        const MYQrCode = document.getElementById("MYQr");
+        closeProfile.addEventListener('click', closeAllPopups);
 
-        MYQrCode.addEventListener("click", function() {
-            downloadQR.style.display = 'block';
-
+        // QR Code handling
+        MYQrCode.addEventListener("click", () => {
+            downloadQR.style.display = "block";
         });
-
-        // Payment method selection
-        /* document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById("payment-method").addEventListener("change", function() {
-                let onlinePaymentForm = document.getElementById("online-payment-form");
-                onlinePaymentForm.style.display = this.value === "online" ? "block" : "none";
-            });
-        }); */
-        const closePopup = document.getElementById("closePopup");
-
-        // Show the QR code popup with slide-in animation
+        closeQRButton.addEventListener("click", function(){
+            downloadQR.classList.remove("show"); // Slide back out
+            setTimeout(() => {
+                downloadQR.style.display = "none"; // Hide after animation completes
+            }, 500); // Match transition duration
+        });
         MYQrCode.addEventListener("click", function() {
             downloadQR.style.display = "block"; // First, make it visible
             setTimeout(() => {
@@ -666,13 +634,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }, 10); // Small delay ensures transition works
         });
 
-        // Hide the QR code popup with slide-out animation
-        closePopup.addEventListener("click", function() {
-            downloadQR.classList.remove("show"); // Slide back out
-            setTimeout(() => {
-                downloadQR.style.display = "none"; // Hide after animation completes
-            }, 500); // Match transition duration
+        // Event popup handling
+        document.querySelectorAll('.event').forEach(event => {
+            event.addEventListener('click', function() {
+                document.getElementById('popupEventName').textContent = this.textContent;
+                document.getElementById('popupEventDate').textContent = this.dataset.date;
+                document.getElementById('popupEventLocation').textContent = this.dataset.location;
+                eventPopup.style.display = 'block';
+                overlay.style.display = 'block';
+            });
         });
+
+        hidePopup.addEventListener("click", closeAllPopups);
+
+        // Overlay click handler
+        overlay.addEventListener('click', closeAllPopups);
+
+        // Universal close function
+        function closeAllPopups() {
+            profileDetails.style.display = 'none';
+            downloadQR.style.display = 'none';
+            eventPopup.style.display = 'none';
+            overlay.style.display = 'none';
+            menuOptions.style.display = 'none';
+        }
+
+        // Search functionality
+        function filterEvents() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            document.querySelectorAll('.event').forEach(event => {
+                event.style.display = event.innerText.toLowerCase().includes(input) ? "flex" : "none";
+            });
+        }
     </script>
 </body>
 
