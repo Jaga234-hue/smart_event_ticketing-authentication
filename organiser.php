@@ -96,18 +96,6 @@
     </div>
 </div>
     <script>
-        document.getElementById("loginform").addEventListener("submit", function (event) {
-            let passwordField = document.getElementById("password");
-            let errorDiv = document.getElementById("loginError");
-
-            if (passwordField.value.trim() === "") {
-                event.preventDefault();
-                errorDiv.textContent = "Please enter your unique number.";
-                errorDiv.style.display = "block";
-            } else {
-                errorDiv.style.display = "none";
-            }
-        });
 
         document.getElementById('loginform').addEventListener('submit', function(event) {
         event.preventDefault(); // Prevent the form from submitting the traditional way
@@ -115,7 +103,7 @@
         var password = document.getElementById('password').value;
         var errorDiv = document.getElementById('loginError');
 
-        if (password === '2457') {
+        if (password == 2457) {
             // Redirect to organiserhome.php if the password is correct
             window.location.href = 'organiserhome.php';
         } else {
