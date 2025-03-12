@@ -96,14 +96,14 @@
     </div>
 </div>
     <script>
-
+        var uniqid = 2457;
         document.getElementById('loginform').addEventListener('submit', function(event) {
         event.preventDefault(); // Prevent the form from submitting the traditional way
 
         var password = document.getElementById('password').value;
         var errorDiv = document.getElementById('loginError');
-
-        if (password == 2457) {
+        
+        if (password == uniqid) {
             // Redirect to organiserhome.php if the password is correct
             window.location.href = 'organiserhome.php';
         } else {
