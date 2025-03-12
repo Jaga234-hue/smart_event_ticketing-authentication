@@ -621,7 +621,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         MYQrCode.addEventListener("click", () => {
             downloadQR.style.display = "block";
         });
-        closeQRButton.addEventListener("click", function(){
+        closeQRButton.addEventListener("click", function() {
             downloadQR.classList.remove("show"); // Slide back out
             setTimeout(() => {
                 downloadQR.style.display = "none"; // Hide after animation completes
@@ -637,14 +637,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Event popup handling
         document.querySelectorAll('.event').forEach(event => {
             event.addEventListener('click', function() {
+                // Update popup text
                 document.getElementById('popupEventName').textContent = this.textContent;
                 document.getElementById('popupEventDate').textContent = this.dataset.date;
                 document.getElementById('popupEventLocation').textContent = this.dataset.location;
+
+                // Set hidden input values
+                document.getElementById('eventNameInput').value = this.textContent; // Event Name
+                document.getElementById('eventDateInput').value = this.dataset.date; // Event Date
+                document.getElementById('eventLocationInput').value = this.dataset.location; // Event Location
+
+                // Show popup
                 eventPopup.style.display = 'block';
                 overlay.style.display = 'block';
             });
         });
-
         hidePopup.addEventListener("click", closeAllPopups);
 
         // Overlay click handler
