@@ -19,6 +19,67 @@ if (mysqli_num_rows($result) == 0) {
     echo "<p>No pending notifications.</p>";
 }
 ?>
+<?php
+ // Database connection
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Retrieve form data
+    $event_name = $_POST['event-name'] ?? '';
+    $event_date = $_POST['event-date'] ?? '';
+    $location = $_POST['location'] ?? '';
+    $organizer_id = 24577; // Fixed Organizer ID
+    // Validate form data
+    if (empty($event_name) || empty($event_date) || empty($location)) {
+        die("All fields are required.");
+    }
+
+    // Generate unique Event_ID between 10000 and 99999
+    do {
+        $event_id = rand(10000, 99999);
+        $check_stmt = $conn->prepare("SELECT Event_ID FROM event WHERE Event_ID = ?");
+        $check_stmt->bind_param("i", $event_id);
+        $check_stmt->execute();
+        $check_stmt->store_result();
+    } while ($check_stmt->num_rows > 0);
+    $check_stmt->close();
+
+    // Handling file upload
+    if (isset($_FILES['thumbnail']) && $_FILES['thumbnail']['error'] == 0) {
+        $thumbnail_name = basename($_FILES['thumbnail']['name']);
+        $thumbnail_tmp = $_FILES['thumbnail']['tmp_name'];
+        $thumbnail_folder = 'thumbnail/' . $thumbnail_name;
+
+        // Validate file type and size
+        $allowed_types = ['jpg', 'jpeg', 'png', 'gif'];
+        $file_type = strtolower(pathinfo($thumbnail_name, PATHINFO_EXTENSION));
+        if (!in_array($file_type, $allowed_types)) {
+            die("Invalid file type. Only JPG, JPEG, PNG, and GIF are allowed.");
+        }
+        if ($_FILES['thumbnail']['size'] > 5000000) { // 5MB limit
+            die("File size is too large. Maximum size allowed is 5MB.");
+        }
+
+        // Move uploaded file to the target folder
+        if (move_uploaded_file($thumbnail_tmp, $thumbnail_folder)) {
+            // Insert data into database
+            $stmt = $conn->prepare("INSERT INTO event (Event_ID, Name, Date, Location, Organizer_ID) VALUES (?, ?, ?, ?, ?)");
+            $stmt->bind_param("isssi", $event_id, $event_name, $event_date, $location, $organizer_id);
+
+            if ($stmt->execute()) {
+                echo ' ';
+            } else {
+                echo "Error: " . $stmt->error;
+            }
+            $stmt->close();
+        } else {
+            echo "Failed to upload thumbnail.";
+        }
+    } else {
+        echo "No file uploaded or there was an error.";
+    }
+
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -332,7 +393,7 @@ if (mysqli_num_rows($result) == 0) {
             <button class="add" id="add">ADD EVENT</button>
         </div>
         <div class="details-of-event" id="details-of-event" style="display:none">
-            <form id="eventForm" method="post" enctype="multipart/form-data">
+            <form id="eventForm" action="organiserhome.php" method="post" enctype="multipart/form-data" >
                 <label for="event-name">Event Name</label>
                 <input type="text" class="input-box" name="event-name" placeholder="Event" required>
 
@@ -461,32 +522,8 @@ if (mysqli_num_rows($result) == 0) {
                     formbox.style.display = "block";
                     addbtn.style.display = "none";
                 })
-                //ajax for adding event
-                $(document).ready(function() {
-                    $("#eventForm").on("submit", function(e) {
-                        e.preventDefault(); // Prevent default form submission
+                
 
-                        var formData = new FormData(this); // Create form data object
-
-                        $.ajax({
-                            url: "userhome.php", // PHP script to process the form
-                            type: "POST",
-                            data: formData,
-                            contentType: false,
-                            processData: false,
-                            success: function(response) {
-                                alert("Event added successfully!"); // Show success message
-
-                                formbox.style.display = "none";
-                                addbtn.style.display = "block";
-                                location.reload();
-                            },
-                            error: function() {
-                                alert("Error occurred while submitting."); // Show error message
-                            }
-                        });
-                    });
-                });
                 //search event functionality
                 function filterEvents() {
                     const input = document.getElementById("searchInput").value.toLowerCase();

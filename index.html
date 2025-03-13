@@ -3,55 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mobile Entry Box</title>
+    <title>Exclusive Entry Portal</title>
     <style>
+        /* Reset Styles */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
 
+        /* Background */
         body {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-        }
-
-        .entry {
-            width: 500px; 
-            height: 100vh;
-            background: #fff;
-            border-radius: 15px;
-            border: 3px solid black;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
+            background: linear-gradient(45deg, #ff416c, #ff4b2b, #2b32b2);
             overflow: hidden;
-            padding: 20px;
+            position: relative;
         }
 
-        .entry-content {
-            width: 100%;
+        /* Glassmorphic Box */
+        .container {
+            width: 420px;
+            padding: 35px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            box-shadow: 0 4px 30px rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(12px);
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            animation: fadeIn 1s ease-in-out;
         }
 
-        form {
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        h2 {
+            color: #fff;
+            font-size: 24px;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+        }
+
+        /* Radio Button Group */
+        .radio-group {
             display: flex;
             flex-direction: column;
             gap: 15px;
-        }
-
-        .checkbox-group {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 10px;
-            padding-left: 20px;
+            margin-bottom: 25px;
         }
 
         label {
@@ -59,28 +65,31 @@
             align-items: center;
             font-size: 18px;
             font-weight: bold;
-            color: #333;
+            color: white;
             cursor: pointer;
-            gap: 10px;
+            gap: 12px;
+            transition: 0.3s;
         }
 
-        input[type="checkbox"] {
+        /* Custom Radio Buttons */
+        input[type="radio"] {
             appearance: none;
             width: 20px;
             height: 20px;
-            border: 2px solid #007bff;
+            border: 3px solid white;
             border-radius: 50%;
-            display: inline-block;
             position: relative;
+            transition: 0.3s;
             cursor: pointer;
         }
 
-        input[type="checkbox"]:checked {
-            background-color: #007bff;
-            border-color: #0056b3;
+        input[type="radio"]:checked {
+            background: #00ff99;
+            box-shadow: 0 0 10px #00ff99;
+            border-color: white;
         }
 
-        input[type="checkbox"]:checked::after {
+        input[type="radio"]:checked::after {
             content: "";
             width: 10px;
             height: 10px;
@@ -92,54 +101,92 @@
             border-radius: 50%;
         }
 
+        /* Button */
         button {
             width: 100%;
-            background: linear-gradient(135deg, #007bff, #0056b3);
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
             color: white;
             padding: 12px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             font-size: 18px;
-            transition: 0.3s;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: 0.4s;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
         }
 
         button:hover {
-            background: linear-gradient(135deg, #0056b3, #004099);
+            background: linear-gradient(135deg, #0072ff, #00c6ff);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+            transform: scale(1.05);
+        }
+
+        /* Welcome Pop-up */
+        .welcome {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            width: fit-content;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            font-size: 1.4rem;
+            opacity: 0;
+            animation: slideDown 1s ease-in-out forwards;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translate(-50%, -50px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+
+        /* Organiser Name */
+        .organiser {
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 18px;
+            color: #00ff99;
+            text-shadow: 0 0 15px #00ff99;
+            animation: glow 1.5s infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #00ff99; }
+            to { text-shadow: 0 0 20px #00ff99; }
         }
 
     </style>
 </head>
 <body>
-    <div class="entry">
-        <div class="entry-content">
-            <form action="enter.php" method="post">
-                <div class="checkbox-group">
-                    <label>
-                        <input type="checkbox" name="role" value="user" onclick="selectOnlyOne(this)">
-                        User
-                    </label>
-                    <label>
-                        <input type="checkbox" name="role" value="organiser" onclick="selectOnlyOne(this)">
-                        Organiser
-                    </label>
-                    <label>
-                        <input type="checkbox" name="role" value="member" onclick="selectOnlyOne(this)">
-                        Member
-                    </label>
-                </div>
-                <button type="submit">Enter</button>
-            </form>
-        </div>
+    <div class="welcome">🚀 Welcome to the Entry Portal! 🔥</div>
+    <div class="container">
+        
+        <h2>Select Your Role</h2>
+        <form action="enter.php" method="post">
+            <div class="radio-group">
+                <label>
+                    <input type="radio" name="role" value="user">
+                    User
+                </label>
+                <label>
+                    <input type="radio" name="role" value="organiser">
+                    Organiser
+                </label>
+                <label>
+                    <input type="radio" name="role" value="admin">
+                    Admin
+                </label>
+            </div>
+            <button type="submit">Enter</button>
+        </form>
+        <div class="organiser">⚡ Current Organiser: Jaga ⚡</div>
     </div>
 
-    <script>
-        function selectOnlyOne(checkbox) {
-            let checkboxes = document.getElementsByName("role");
-            checkboxes.forEach((item) => {
-                if (item !== checkbox) item.checked = false;
-            });
-        }
-    </script>
 </body>
 </html>

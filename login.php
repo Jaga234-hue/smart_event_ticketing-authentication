@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once 'db_connect.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -6,32 +7,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
 
     if (empty($email) || empty($password)) {
-        echo json_encode(['status' => 'error', 'message' => 'Email and password are required.']);
-        exit;
+        $_SESSION['error'] = 'Email and password are required.';
+        header("Location: user.php");
+        exit();
     }
 
-    // Prepare the SQL query using MySQLi
+    // Use correct column name for email (e.g., 'Email')
     $stmt = $conn->prepare("SELECT * FROM user WHERE Email = ?");
-    $stmt->bind_param("s", $email); // "s" means string type
+    $stmt->bind_param("s", $email);
     $stmt->execute();
     
-    // Fetch the result
     $result = $stmt->get_result();
     $user = $result->fetch_assoc();
 
-    // Verify password
-    if ($user && password_verify($password, $user['password'])) {
-        echo json_encode(['status' => 'success', 'message' => 'Login successful.']);
-        header("Location: userhome.php"); // Redirect to userhome.php
-    exit(); // Ensure script stops executing after redirect
+    // Use correct column name for password (e.g., 'Password')
+    if ($user && $password === $user['Password']) { // Replace with your logic
+        header("Location: userhome.php");
+        exit();
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'Invalid email or password.']);
+        $_SESSION['error'] = 'Invalid email or password.';
+        header("Location: loginpage.php"); // Fixed redirect
+        exit();
     }
 
-    // Close statement
     $stmt->close();
 }
 
-// Close database connection
 $conn->close();
 ?>
