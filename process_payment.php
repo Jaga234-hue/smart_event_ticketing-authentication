@@ -134,8 +134,8 @@ $conn->close();
         .success-box {
             position: relative;
             display: none;
-            width: 300px;
-            height: 300px;
+            width: 400px;
+            height: 400px;
             background: linear-gradient(135deg, #00ff99, #0077ff);
             border-radius: 20px;
             display: flex;
@@ -194,6 +194,7 @@ $conn->close();
             color: white;
             font-size: 1.5rem;
             font-weight: bold;
+            text-align: center;
         }
 
         /* SKIP BUTTON */
@@ -226,7 +227,9 @@ $conn->close();
     <div class="success-box" id="successBox">
         <button class="skip-btn" onclick="skipAnimation()">Skip</button>
         <div class="checkmark"></div>
-        <div class="message">Payment Successful</div>
+        <div class="message"><h1> Payment Successful</h1> <Br>
+        
+        your qr code will be sent to home menu(My Qr Code)</div>
     </div>
 
     <script>

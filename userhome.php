@@ -355,6 +355,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            overflow-y: scroll;
         }
 
         /* When the popup is active, slide it fully into view */
