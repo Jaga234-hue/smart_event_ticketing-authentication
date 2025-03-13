@@ -96,9 +96,14 @@ echo "Current User Email: " . ($_SESSION['email'] ?? "Not Set");
     <title>Admin Registration</title>
     <style>
         body {
+            display: flex;
             background-color: rgba(0, 0, 0, 0.6);
             font-family: Arial, sans-serif;
-            text-align: center;
+            align-items: center;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+
         }
         .loader-container {
             position: fixed;
@@ -107,19 +112,21 @@ echo "Current User Email: " . ($_SESSION['email'] ?? "Not Set");
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.6);
+            
             display: none;
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            background-color: rgb(76, 131, 76);
+            background-color: rgb(135, 154, 135);
         }
         .loader {
-            border: 30px solid #f3f3f3;
-            border-top: 30px solid #007BFF;
+            border: 15px solid #f3f3f3;
+            border-top: 15px solid #3498db;
             border-radius: 50%;
-            width: 200px;
-            height: 200px;            
+            width: 100px;
+            height: 100px;            
             animation: spin 1s linear infinite;
+            margin-left: 120px;
         }
         .wait-text {
             color: black;
@@ -166,7 +173,7 @@ echo "Current User Email: " . ($_SESSION['email'] ?? "Not Set");
 <div class="loader-container" id="loader">
     <div>
         <div class="loader"></div>
-        <div class="wait-text">Waiting for <br> organizer's approval...</div>
+        <div class="wait-text"><h1>Please Wait</h1>for <br> <h1>organizer's approval...</h1> <br>it may takes some time</div>
     </div>
 </div>
 

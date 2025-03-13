@@ -14,16 +14,17 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #e3e3e3;
+            background-color:rgb(66, 48, 48);
             font-family: Arial, sans-serif;
         }
 
         .container {
             width: 500px;
             height: 100vh;
-            background-color: white;
+            background-color: rgb(105, 98, 98);
             position: relative;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+
             overflow: hidden;
         }
 
@@ -33,7 +34,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px;
-            background: #fff;
+            background:rgb(68, 75, 83);
             position: relative;
             z-index: 10;
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
@@ -75,7 +76,7 @@
         .profile {
             width: 50px;
             height: 50px;
-            background: blue;
+            background: rgb(24, 50, 68);
             color: white;
             display: flex;
             justify-content: center;
@@ -83,7 +84,9 @@
             border-radius: 50%;
             font-weight: bold;
             cursor: pointer;
+            overflow: hidden;
         }
+
 
         /* Flipkart-style Slider */
         .slider-container {
@@ -142,14 +145,16 @@
 
         /* Event List */
         .event-list {
-    background: black;
-    padding: 15px;
-    border-radius: 10px;
-    color: white;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    overflow-y: scroll; /* Add this line */
-    height: 300px; /* Set a fixed height or use max-height as needed */
-}
+            background: black;
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            overflow-y: scroll;
+            /* Add this line */
+            height: 300px;
+            /* Set a fixed height or use max-height as needed */
+        }
 
         .event {
             display: flex;
@@ -288,7 +293,7 @@
             color: white;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 10px rgba(94, 70, 70, 0.5);
             display: none;
             width: 300px;
             text-align: center;
@@ -391,10 +396,10 @@
     <div class="container">
         <div class="top-bar">
             <div class="menu" onclick="toggleMenu()">☰</div>
-            <div class="profile" id="profile">Profile</div>
+            <div class="profile" id="profile">You</div>
         </div>
         <div class="prfileDetails" id="profileDetails" style="display: none;">
-            <h2>Profile</h2>
+            <h1>your profile</h1>
             <h1 class="close-profile">X</h1>
             <?php
             if (isset($_COOKIE["user_id"]) && isset($_COOKIE["username"]) && isset($_COOKIE["email"]) && isset($_COOKIE["phone"])) {
@@ -416,7 +421,7 @@
         <div class="menu-options" id="menuOptions">
             <div>My Selected Event</div>
             <div id="MYQr">My QR Codes</div>
-            <div>Settings</div>
+            <div onclick="location.href='user.php'">Logout</div>
         </div>
         <div class="downloadQR" id="downloadQR" style="display: none;">
             <h2>Download QR Code</h2>
@@ -466,9 +471,9 @@
         </div>
         <div class="slider-container">
             <div class="slider" id="slider">
-                <div class="slide" style="background: red;"></div>
-                <div class="slide" style="background: blue;"></div>
-                <div class="slide" style="background: green;"></div>
+                <div class="slide" ><img src="thumbnail\3.png" alt=""></div>
+                <div class="slide" ><img src="thumbnail\2.png" alt=""></div>
+                <div class="slide" ><img src="thumbnail\1.png" alt=""></div>
             </div>
             <div class="arrow left-arrow" onclick="prevSlide()">⬅</div>
             <div class="arrow right-arrow" onclick="nextSlide()">➡</div>

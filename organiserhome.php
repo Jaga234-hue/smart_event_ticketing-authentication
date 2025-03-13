@@ -16,7 +16,7 @@ if (!$result) {
 
 // Check if there are pending notifications
 if (mysqli_num_rows($result) == 0) {
-    echo "<p>No pending notifications.</p>";
+    echo "<p>No new admins have signed up.</p>";
 }
 ?>
 <?php
@@ -99,7 +99,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             padding: 20px;
             flex-direction: column;
             align-items: center;
-            overflow-x: hidden;
+            overflow: hidden;
             /* Hide horizontal scrollbar */
         }
 
@@ -235,12 +235,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         /* Event List */
-        .event-list {
+        .evens-list {
             background: black;
             padding: 15px;
             border-radius: 10px;
             color: white;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            height: 300px;
+            overflow-y: scroll;
         }
 
         .event {
@@ -379,7 +381,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <?php while ($row = mysqli_fetch_assoc($result)) { ?>
                 <?php echo "<h2>Pending Notifications</h2>" ?>
                 <div class="notification">
-                    New Signup:
+                    New admin:
                     <span> <?php echo htmlspecialchars($row['user_email']); ?></span>
                     <div class="buttons">
                         <button class="btn approve" onclick="approveUser('<?php echo htmlspecialchars($row['user_email']); ?>')">✔</button>
@@ -432,6 +434,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
     <button id="popupcls" style="display: none;"> <-- GO BACK </button>
             <div class="verified-list" id="verified-list" style="display: none;">
+                <h1 style="text-align: center; text-decoration: underline;">Verified List</h1>
                 <?php
                 // Assuming the database connection is already established
 
